@@ -4,10 +4,10 @@
 
  -  NodeJS
  -  Yarn
- -  Gnache
+ -  Ganache
  
 ## Create .env file from env.example
-Edit gnache private key,MNEMONIC  and Bscscan API 
+Edit ganache private key,MNEMONIC  and Bscscan API 
 
 
 ## Compile
