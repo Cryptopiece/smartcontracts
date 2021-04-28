@@ -1,0 +1,9 @@
+{
+  "dev": {
+    "FTXFToken": "0x9F776F09AB7422F254A2e9cd9C7871252c890C39",
+    "SporesToken": "0x69934AC5dA3B9F85B431e46846BCFe857f7158c0"
+  },
+  "bsctest": {
+    "FTXFToken": "0xa9b50d6F8748c18ceA1EfC962a053B9d80fCBEf7"
+  }
+}
