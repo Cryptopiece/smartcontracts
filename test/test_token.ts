@@ -17,7 +17,7 @@ describe('token contract', function() {
         chai.expect(ownerAddress).equals(owner.address);
     });
 
-    it ('total cap to be 10^28', async function() {
+    it ('total cap to be 10^26', async function() {
         const [deployer, owner] = await ethers.getSigners();
         
         const Token = await ethers.getContractFactory("FTXFToken", deployer);
@@ -28,5 +28,14 @@ describe('token contract', function() {
         chai.expect(BigNumber.from(10).pow(26).eq(totalSupply)).true;
     });
     
-    
+    it ('total pre-mint to be 8*10**18', async function() {
+        const [deployer, owner] = await ethers.getSigners();
+
+        const Token = await ethers.getContractFactory("FTXFToken", deployer);
+        const token = await Token.deploy(owner.address);
+
+        const pre_mint = await token.balanceOf(owner.address);
+        chai.expect(BigNumber.from(10).pow(24).mul(8).eq(pre_mint)).true;
+    });
+ 
 });
