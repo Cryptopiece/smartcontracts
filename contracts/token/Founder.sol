@@ -1,3 +1,4 @@
+//SPDX-License-Identifier: UNLICENSED
 pragma solidity ^0.7.5;
 
 import "../library/IERC20Mintable.sol";
@@ -5,11 +6,6 @@ import "openzeppelin-solidity/contracts/token/ERC20/SafeERC20.sol";
 import "openzeppelin-solidity/contracts/math/SafeMath.sol";
 import "openzeppelin-solidity/contracts/access/Ownable.sol";
 
-/**
- * @title Staking Token (STK)
- * @author Alberto Cuesta Canada
- * @notice Implements a basic ERC20 staking token with incentive distribution.
- */
 contract Founder is Ownable {
     using SafeMath for uint256;
     using SafeERC20 for IERC20Mintable;
@@ -19,25 +15,30 @@ contract Founder is Ownable {
         uint256 withdraw;
     }
 
-    struct Staker {
+    struct StakerInfo {
         uint256 amount;
-        uint256 withdraw;
+        uint256 rewardDebt;
     }
+
+    mapping (address => StakerInfo) _stakers;
+    uint256 public _stakeRewardMinted;
+    uint256 public _stakeRewardPerBlock;
+    uint256 public _totalStake;
+    uint256 public _accAmountPerShare;
+    uint256 public _lastRewardBlock;
 
     mapping (address => PoolInfo) _pools;
 
-    IERC20Mintable _rewardToken;
+    IERC20Mintable public _rewardToken;
 
-    uint256 _salePoolSupply = 3500000 * (10 ** uint256(18));
+    uint256 public _salePoolSupply = 3500000 * (10 ** uint256(18));
     uint256 public _salePoolLeft = 3500000 * (10 ** uint256(18));
     bool public _onPublicSale = true;
     uint256 public _salePrice;
     uint256 public _salePriceDiv;
 
-
-    uint256 _totalShare;
+    uint256 public _totalShare;
     uint256 _startBlock;
-    uint256 _lastBlock;
     uint256 _poolRewardPerBlock;
 
     modifier onSale {
@@ -89,7 +90,7 @@ contract Founder is Ownable {
             msg.sender.transfer(change);
         }
 
-        _rewardToken.transfer(msg.sender, amount);
+        _rewardToken.mint(msg.sender, amount);
     }
 
     function setRewardPerBlock(uint256 reward) external onlyOwner {
@@ -111,5 +112,89 @@ contract Founder is Ownable {
 
         _rewardToken.mint(msg.sender, reward);
         _pools[msg.sender].withdraw = totalReward;
+    }
+
+    function changeStakeReward(uint256 reward) external onlyOwner {
+        require(reward != _stakeRewardPerBlock, "no change");
+        _stakeRewardPerBlock = reward;
+    }
+
+    function update() internal {
+        uint256 lastRewardBlock = _lastRewardBlock;
+        if (block.number <= _stakeRewardPerBlock) {
+            return;
+        }
+
+        if (_totalShare == 0) {
+            lastRewardBlock = block.number;
+            return;
+        }
+
+        uint256 multiplier = block.number.sub(lastRewardBlock);
+        uint256 reward = multiplier.mul(_stakeRewardPerBlock);
+
+        _accAmountPerShare = _accAmountPerShare.add(reward.mul(1e12).div(_totalStake));
+        _lastRewardBlock = block.number;
+        _rewardToken.mint(address(this), reward);
+    }
+
+    function stake(uint256 amount) external {
+        require(amount > 0, "amount must be greater than zero");
+
+        StakerInfo storage staker = _stakers[msg.sender];
+        update();
+
+        if (staker.amount > 0) {
+            uint256 pending = staker.amount.mul(_accAmountPerShare).div(1e12).sub(staker.rewardDebt);
+
+            _stakeRewardMinted = _stakeRewardMinted.add(pending);
+            _rewardToken.safeTransferFrom(address(this), msg.sender, pending); // return pending reward
+        }
+
+        _totalStake = _totalStake.add(amount);
+        staker.amount = staker.amount.add(amount);
+        staker.rewardDebt = staker.amount.mul(_accAmountPerShare).div(1e12);
+
+        _rewardToken.safeTransferFrom(msg.sender, address(this), amount); // move staking amount in
+    }
+
+    function unstake(uint256 amount) external {
+        require(amount > 0, "amount must be greater than zero");
+
+        StakerInfo storage staker = _stakers[msg.sender];
+        require(staker.amount >= amount, "staked amount not enough");
+        update();
+
+        uint256 pending = staker.amount.mul(_accAmountPerShare).div(1e12).sub(staker.rewardDebt);
+        _rewardToken.safeTransferFrom(address(this), msg.sender, pending); // return pending reward
+        _stakeRewardMinted = _stakeRewardMinted.add(pending);
+
+        staker.amount = staker.amount.sub(amount);
+        staker.rewardDebt = staker.amount.mul(_accAmountPerShare).div(1e12);
+        _totalStake = _totalStake.sub(amount);
+    }
+
+    function getStakeReward(address stakerAddr) external view returns (uint256) {
+        StakerInfo storage staker = _stakers[stakerAddr];
+
+        uint256 accAmountPerShare = _accAmountPerShare;
+
+        if (block.number > _lastRewardBlock && _totalStake != 0) {
+            uint256 multiplier = block.number.sub(_lastRewardBlock);
+            uint256 reward = multiplier.mul(_stakeRewardPerBlock);
+            accAmountPerShare = accAmountPerShare.add(reward.mul(1e12).div(_totalStake));
+        }
+
+        return staker.amount.mul(accAmountPerShare).div(1e12).sub(staker.rewardDebt);
+    }
+
+    function redeemStakeReward() external {
+        StakerInfo storage staker = _stakers[msg.sender];
+        update();
+
+        uint256 pending = staker.amount.mul(_accAmountPerShare).div(1e12).sub(staker.rewardDebt);
+
+        _stakeRewardMinted = _stakeRewardMinted.add(pending);
+        _rewardToken.safeTransferFrom(address(this), msg.sender, pending); // return pending reward
     }
 }

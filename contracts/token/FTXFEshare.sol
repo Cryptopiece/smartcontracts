@@ -39,7 +39,7 @@ contract FTXFEshare is ERC20("FTXFEshare", "ESHARE"), ERC20Burnable , Ownable {
         return holders.length;    
     }
 
-    function getHolders() public view returns(address[] memory holders)
+    function getHolders() public view returns(address[] memory)
     {
         return holders;
     }
