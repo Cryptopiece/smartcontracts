@@ -13,17 +13,15 @@ contract FTXFToken is ERC20("FTXFUND", "FTXF"), ERC20Burnable ,
         ERC20Capped( 100000000 * (10**uint256(18))), Ownable {
     using SafeMath for uint256;
 
-    constructor(address owner) {
-        transferOwnership(owner);
-	_mint(owner, 8000000 * (10**uint256(18)));
+    constructor() {
+	    _mint(msg.sender, 8000000 * (10**uint256(18)));
     }
 
     function mint(address to, uint256 amount) public onlyOwner {
        _mint(to,amount);
     }
+
     function _beforeTokenTransfer(address from, address to, uint256 amount) internal override(ERC20, ERC20Capped) {
         super._beforeTokenTransfer(from, to, amount);
     }
-
-   
 }
