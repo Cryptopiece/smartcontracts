@@ -6,6 +6,8 @@ import "openzeppelin-solidity/contracts/token/ERC20/SafeERC20.sol";
 import "openzeppelin-solidity/contracts/math/SafeMath.sol";
 import "openzeppelin-solidity/contracts/access/Ownable.sol";
 
+import "hardhat/console.sol";
+
 contract Founder is Ownable {
     using SafeMath for uint256;
     using SafeERC20 for IERC20Mintable;
@@ -46,8 +48,9 @@ contract Founder is Ownable {
         _;
     }
 
-    constructor(uint256 startBlock, address rewardToken, address[] memory pools, uint256[] memory poolShares,
-            uint256 poolRewardPerBlock, uint256 salePrice, uint256 salePriceDiv) {
+    constructor(address rewardToken, address[] memory pools, uint256[] memory poolShares, 
+            uint256 stakeRewardPerBlock, uint256 poolRewardPerBlock, uint256 salePrice, 
+            uint256 salePriceDiv) {
         require(pools.length == poolShares.length, "pools and shares data lenght different");
         
         uint256 totalShare = 0;
@@ -59,9 +62,15 @@ contract Founder is Ownable {
         _totalShare = totalShare;
         _rewardToken = IERC20Mintable(rewardToken);
         _poolRewardPerBlock = poolRewardPerBlock;
-        _startBlock = startBlock;
+        _stakeRewardPerBlock = stakeRewardPerBlock;
         _salePrice = salePrice;
         _salePriceDiv = salePriceDiv;
+    }
+
+    function startStaking(uint256 startBlock) external onlyOwner {
+        require(block.number <= startBlock, "invalid start block");
+
+        _startBlock = startBlock;
     }
 
     function stopPublicSale() external onlyOwner onSale {
@@ -121,12 +130,12 @@ contract Founder is Ownable {
 
     function update() internal {
         uint256 lastRewardBlock = _lastRewardBlock;
-        if (block.number <= _stakeRewardPerBlock) {
+        if (_totalStake == 0) {
+            _lastRewardBlock = block.number;
             return;
         }
 
-        if (_totalShare == 0) {
-            lastRewardBlock = block.number;
+        if (block.number <= _startBlock) {
             return;
         }
 
