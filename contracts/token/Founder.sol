@@ -42,6 +42,7 @@ contract Founder is Ownable {
     uint256 public _totalShare;
     uint256 _startBlock;
     uint256 _poolRewardPerBlock;
+    uint256 _poolEndRewardIn; //3 years as block in BSC
 
     modifier onSale {
         require(_onPublicSale && _salePoolLeft > 0, "Public sale stopped");
@@ -50,7 +51,7 @@ contract Founder is Ownable {
 
     constructor(address rewardToken, address[] memory pools, uint256[] memory poolShares, 
             uint256 stakeRewardCap, uint256 stakeRewardPerBlock, uint256 poolRewardPerBlock, 
-            uint256 salePrice, uint256 salePriceDiv) {
+            uint256 salePrice, uint256 salePriceDiv, uint256 poolRewardEndIn) {
         require(pools.length == poolShares.length, "pools and shares data lenght different");
         
         uint256 totalShare = 0;
@@ -66,6 +67,7 @@ contract Founder is Ownable {
         _stakeRewardPerBlock = stakeRewardPerBlock;
         _salePrice = salePrice;
         _salePriceDiv = salePriceDiv;
+        _poolEndRewardIn = poolRewardEndIn;
     }
 
     function startStaking(uint256 startBlock) external onlyOwner {
@@ -103,14 +105,20 @@ contract Founder is Ownable {
         _rewardToken.mint(msg.sender, amount);
     }
 
-    function setRewardPerBlock(uint256 reward) external onlyOwner {
-        _poolRewardPerBlock = reward;
-    }
-
     function getTotalPoolReward(PoolInfo memory pool) internal view returns (uint256 poolReward) {
-         uint256 totalReward = (block.number - _startBlock).mul(_poolRewardPerBlock);
+        uint256 blockNumber = block.number;
+        if (_poolEndRewardIn.add(_startBlock) < block.number) {
+            blockNumber = _poolEndRewardIn.add(_startBlock);
+        }
+        uint256 totalReward = (blockNumber - _startBlock).mul(_poolRewardPerBlock);
 
         poolReward = totalReward.mul(pool.shares).div(_totalShare);
+    }
+
+    function getPoolReward(address pool) external view returns (uint256) {
+        PoolInfo memory poolInfo = _pools[pool];
+
+        return getTotalPoolReward(poolInfo).sub(poolInfo.withdraw);
     }
 
     function redeemPoolReward() external {

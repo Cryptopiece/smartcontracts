@@ -4,7 +4,7 @@ import * as Config from './config';
 
 //-----------------------------------------------------------------------------
 // PARAMETER
-// all pools except staking pools
+// this should not included staking pools
 const poolsInfo: { [index: string]: {address:string, share: number} } = 
     {
         'dev': {
@@ -27,6 +27,8 @@ const stakeRewardCap = BigNumber.from(10).pow(18).mul(50000000); // change this 
 const stakeRewardPerBlock = stakeRewardCap.mul(3).div(86400 * 365).mul(3);
 // number of token for above pools, poolRewardPerBlock = totalRewardForPools / time to mine (seconds) * 3
 const poolRewardPerBlock = BigNumber.from(10).pow(18); // change this later
+//number of block to generate pool reward
+const poolRewardEndIn = BigNumber.from(86400).mul(1000) // 1000 days
 // sale price of token will be salePrice / salePriveDiv per token in wei
 const salePrice = 100;
 const salePriceDiv = 10000;
@@ -57,7 +59,8 @@ async function main() {
 
     const Founder = await ethers.getContractFactory("Founder");
     const founder = await Founder.deploy(tokenAddress, pools, poolsShare, stakeRewardCap, 
-            stakeRewardPerBlock, poolRewardPerBlock, salePrice, salePriceDiv);
+        stakeRewardPerBlock, poolRewardPerBlock, salePrice, salePriceDiv, poolRewardEndIn);
+
     const Token = await ethers.getContractFactory("FTXFToken");
     const token = Token.attach(tokenAddress);
     await token.transferOwnership(founder.address);
