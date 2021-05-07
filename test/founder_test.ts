@@ -25,19 +25,10 @@ async function deployFounder(
 }
 
 describe('founder contract', function () {
-    it('should increase block number', async function() {
-
-        const num = await ethers.provider.getBlockNumber();
-        await ethers.provider.send("evm_mine", []);
-
-        const newBlockNum = await ethers.provider.getBlockNumber();
-        chai.expect(newBlockNum).equal(num + 1);
-    });
-
     it('should be able to deploy', async function () {
         const [deployer] = await ethers.getSigners();
 
-        const [token, founder] = await deployFounder(deployer);
+        await deployFounder(deployer);
     })
 
     it('should be able to return staking reward', async function() {
@@ -58,7 +49,7 @@ describe('founder contract', function () {
 
         await founder.stake(stakeAmount);
 
-        await ethers.provider.send("evm_mine", []);
+        await ethers.provider.send('evm_mine', []);
         const reward = await founder.getStakeReward(deployer.address);
 
         chai.expect(reward.eq(rewardPerBlock)).true;
@@ -106,7 +97,7 @@ describe('founder contract', function () {
         await founder.stake(stakeAmount);
         await founderAsStaker.stake(stakeAmount);
 
-        ethers.provider.send("evm_mine", []); // skip 1 block
+        ethers.provider.send('evm_mine', []); // skip 1 block
         const deployerReward = await founder.getStakeReward(deployer.address);
         const stakerReward = await founder.getStakeReward(staker.address);
 
@@ -114,4 +105,80 @@ describe('founder contract', function () {
                 && stakerReward.eq(rewardPerBlock.div(2))).true;
     });
 
+    it('should be able to withdraw staking reward', async function () {
+        const [deployer, staker] = await ethers.getSigners();
+
+        const rewardPerBlock = BigNumber.from(10).pow(18);
+        const stakeAmount = rewardPerBlock;
+        const [token, founder] = await deployFounder(deployer, rewardPerBlock);
+
+        token.transfer(staker.address, stakeAmount);
+
+        const founderAsStaker = founder.connect(staker);
+        const tokenAsStaker = token.connect(staker);
+        await token.approve(founder.address, stakeAmount);
+        await tokenAsStaker.approve(founder.address, stakeAmount);
+
+        const startBlock = await ethers.provider.getBlockNumber();
+        await founder.startStaking(startBlock + 1);
+        await founder.stake(stakeAmount);
+        await founderAsStaker.stake(stakeAmount);
+
+        await founderAsStaker.redeemStakeReward();
+
+        const stakerBalance = await token.balanceOf(staker.address);
+
+        chai.expect(stakerBalance.eq(rewardPerBlock.div(2))).true;
+    });
+
+    it('should be able to unstake', async function () {
+        const [deployer, staker] = await ethers.getSigners();
+
+        const rewardPerBlock = BigNumber.from(10).pow(18);
+        const stakeAmount = rewardPerBlock;
+        const [token, founder] = await deployFounder(deployer, rewardPerBlock);
+
+        token.transfer(staker.address, stakeAmount);
+
+        const founderAsStaker = founder.connect(staker);
+        const tokenAsStaker = token.connect(staker);
+        await token.approve(founder.address, stakeAmount);
+        await tokenAsStaker.approve(founder.address, stakeAmount);
+
+        const startBlock = await ethers.provider.getBlockNumber();
+        await founder.startStaking(startBlock + 1);
+        await founder.stake(stakeAmount);
+        await founderAsStaker.stake(stakeAmount);
+
+        await founderAsStaker.unstake(stakeAmount);
+
+        const stakerBalance = await token.balanceOf(staker.address);
+
+        chai.expect(stakerBalance.eq(rewardPerBlock.div(2).add(stakeAmount))).true;
+    });
+
+    it('should be able to change stake reward per block', async function() {
+        const [deployer, staker] = await ethers.getSigners();
+
+        const rewardPerBlock = BigNumber.from(10).pow(18);
+        const stakeAmount = rewardPerBlock;
+        const [token, founder] = await deployFounder(deployer, rewardPerBlock);
+
+        token.transfer(staker.address, stakeAmount);
+
+        const founderAsStaker = founder.connect(staker);
+        const tokenAsStaker = token.connect(staker);
+        await token.approve(founder.address, stakeAmount);
+        await tokenAsStaker.approve(founder.address, stakeAmount);
+
+        const startBlock = await ethers.provider.getBlockNumber();
+        await founder.startStaking(startBlock + 1);
+        await founder.stake(stakeAmount);
+        await founderAsStaker.stake(stakeAmount);
+
+        await founder.changeStakeReward(rewardPerBlock.div(2));
+        const reward = await founder.getStakeReward(staker.address);
+
+        chai.expect(reward.eq(rewardPerBlock.div(4))).true;
+    });
 });

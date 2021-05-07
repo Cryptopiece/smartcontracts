@@ -34,7 +34,7 @@ describe('token contract', function() {
         const Token = await ethers.getContractFactory("FTXFToken", deployer);
         const token = await Token.deploy(owner.address);
 
-        const pre_mint = await token.balanceOf(owner.address);
+        const pre_mint = await token.balanceOf(deployer.address);
         chai.expect(BigNumber.from(10).pow(24).mul(8).eq(pre_mint)).true;
     });
  

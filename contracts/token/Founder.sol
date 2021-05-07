@@ -123,6 +123,7 @@ contract Founder is Ownable {
         _pools[msg.sender].withdraw = totalReward;
     }
 
+    // in effect from last reward block
     function changeStakeReward(uint256 reward) external onlyOwner {
         require(reward != _stakeRewardPerBlock, "no change");
         _stakeRewardPerBlock = reward;
@@ -157,7 +158,7 @@ contract Founder is Ownable {
             uint256 pending = staker.amount.mul(_accAmountPerShare).div(1e12).sub(staker.rewardDebt);
 
             _stakeRewardMinted = _stakeRewardMinted.add(pending);
-            _rewardToken.safeTransferFrom(address(this), msg.sender, pending); // return pending reward
+            _rewardToken.safeTransfer(msg.sender, pending); // return pending reward
         }
 
         _totalStake = _totalStake.add(amount);
@@ -175,12 +176,13 @@ contract Founder is Ownable {
         update();
 
         uint256 pending = staker.amount.mul(_accAmountPerShare).div(1e12).sub(staker.rewardDebt);
-        _rewardToken.safeTransferFrom(address(this), msg.sender, pending); // return pending reward
+        _rewardToken.safeTransfer(msg.sender, pending); // return pending reward
         _stakeRewardMinted = _stakeRewardMinted.add(pending);
 
         staker.amount = staker.amount.sub(amount);
         staker.rewardDebt = staker.amount.mul(_accAmountPerShare).div(1e12);
         _totalStake = _totalStake.sub(amount);
+        _rewardToken.safeTransfer(msg.sender, amount);
     }
 
     function getStakeReward(address stakerAddr) external view returns (uint256) {
@@ -202,8 +204,9 @@ contract Founder is Ownable {
         update();
 
         uint256 pending = staker.amount.mul(_accAmountPerShare).div(1e12).sub(staker.rewardDebt);
+        staker.rewardDebt = 0;
 
         _stakeRewardMinted = _stakeRewardMinted.add(pending);
-        _rewardToken.safeTransferFrom(address(this), msg.sender, pending); // return pending reward
+        _rewardToken.safeTransfer(msg.sender, pending); // return pending reward
     }
 }
