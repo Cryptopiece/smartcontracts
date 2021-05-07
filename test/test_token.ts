@@ -6,7 +6,7 @@ import { ethers } from 'hardhat';
 chai.use(chaiAsPromised);
 
 describe('token contract', function() {
-    it ('owner is deployer', async function() {
+    it('owner is deployer', async function() {
         const [deployer, owner] = await ethers.getSigners();
 
         const Token = await ethers.getContractFactory("FTXFToken", deployer);
@@ -17,7 +17,7 @@ describe('token contract', function() {
         chai.expect(ownerAddress).equals(owner.address);
     });
 
-    it ('total cap to be 10^26', async function() {
+    it('total cap to be 10^26', async function() {
         const [deployer, owner] = await ethers.getSigners();
         
         const Token = await ethers.getContractFactory("FTXFToken", deployer);
@@ -28,7 +28,7 @@ describe('token contract', function() {
         chai.expect(BigNumber.from(10).pow(26).eq(totalSupply)).true;
     });
     
-    it ('total pre-mint to be 8*10**18', async function() {
+    it('total pre-mint to be 8*10**18', async function() {
         const [deployer, owner] = await ethers.getSigners();
 
         const Token = await ethers.getContractFactory("FTXFToken", deployer);

@@ -6,7 +6,7 @@ import { ethers } from 'hardhat';
 chai.use(chaiAsPromised);
 
 describe('eshare contract', function() {
-    it ('owner is deployer', async function() {
+    it('owner is deployer', async function() {
         const [deployer, owner] = await ethers.getSigners();
 
         const Token = await ethers.getContractFactory("FTXFEshare", deployer);
@@ -17,7 +17,7 @@ describe('eshare contract', function() {
         chai.expect(ownerAddress).equals(owner.address);
     });
 
-    it ('total cap to be 0', async function() {
+    it('total cap to be 0', async function() {
         const [deployer, owner] = await ethers.getSigners();
         
         const Token = await ethers.getContractFactory("FTXFEshare", deployer);
@@ -28,7 +28,7 @@ describe('eshare contract', function() {
         chai.expect(BigNumber.from(0).eq(totalSupply)).true;
     });
     
-    it ('total cap to be increase to 1000 when mint', async function() {
+    it('total cap to be increase to 1000 when mint', async function() {
         const [deployer, owner] = await ethers.getSigners();
         
         const Token = await ethers.getContractFactory("FTXFEshare", deployer);
@@ -40,7 +40,7 @@ describe('eshare contract', function() {
         chai.expect(BigNumber.from(10).pow(18).mul(1000).eq(totalSupply)).true;
     });
 
-    it ('Balance of owner to be increase to 1000 when mint', async function() {
+    it('Balance of owner to be increase to 1000 when mint', async function() {
         const [deployer, owner] = await ethers.getSigners();
         
         const Token = await ethers.getContractFactory("FTXFEshare", deployer);
@@ -52,7 +52,7 @@ describe('eshare contract', function() {
         chai.expect(BigNumber.from(10).pow(18).mul(1000).eq(balanceOfOwner)).true;
     });
 
-    it ('Balance of 0x606f86D79edE6C04DD583FE89b64eF010405D462 to be increase to 2000 when mint', async function() {
+    it('Balance of 0x606f86D79edE6C04DD583FE89b64eF010405D462 to be increase to 2000 when mint', async function() {
         const [deployer, owner] = await ethers.getSigners();
         
         const Token = await ethers.getContractFactory("FTXFEshare", deployer);
@@ -65,7 +65,7 @@ describe('eshare contract', function() {
         chai.expect(BigNumber.from(10).pow(18).mul(2000).eq(balanceOfTheAddress)).true;
     });
 
-     it ('Get size of Holders', async function() {
+    it('Get size of Holders', async function() {
         const [deployer, owner] = await ethers.getSigners();
         
         const Token = await ethers.getContractFactory("FTXFEshare", deployer);
@@ -77,7 +77,7 @@ describe('eshare contract', function() {
         chai.expect(BigNumber.from(2).eq(sizeOfHolders)).true;
     }); 
 
-    it ('Get size of Holders that pushing exists address', async function() {
+    it('Get size of Holders that pushing exists address', async function() {
         const [deployer, owner] = await ethers.getSigners();
         
         const Token = await ethers.getContractFactory("FTXFEshare", deployer);

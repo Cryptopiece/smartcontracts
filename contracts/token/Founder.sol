@@ -26,8 +26,10 @@ contract Founder is Ownable {
     uint256 public _stakeRewardMinted;
     uint256 public _stakeRewardPerBlock;
     uint256 public _totalStake;
+    uint256 public _stakeRewardLeft;
     uint256 public _accAmountPerShare;
     uint256 public _lastRewardBlock;
+    uint256 _finalRewardBlock = 0;
 
     mapping (address => PoolInfo) _pools;
 
@@ -49,8 +51,8 @@ contract Founder is Ownable {
     }
 
     constructor(address rewardToken, address[] memory pools, uint256[] memory poolShares, 
-            uint256 stakeRewardPerBlock, uint256 poolRewardPerBlock, uint256 salePrice, 
-            uint256 salePriceDiv) {
+            uint256 stakeRewardCap, uint256 stakeRewardPerBlock, uint256 poolRewardPerBlock, 
+            uint256 salePrice, uint256 salePriceDiv) {
         require(pools.length == poolShares.length, "pools and shares data lenght different");
         
         uint256 totalShare = 0;
@@ -62,6 +64,7 @@ contract Founder is Ownable {
         _totalShare = totalShare;
         _rewardToken = IERC20Mintable(rewardToken);
         _poolRewardPerBlock = poolRewardPerBlock;
+        _stakeRewardLeft = stakeRewardCap;
         _stakeRewardPerBlock = stakeRewardPerBlock;
         _salePrice = salePrice;
         _salePriceDiv = salePriceDiv;
@@ -131,6 +134,14 @@ contract Founder is Ownable {
 
     function update() internal {
         uint256 lastRewardBlock = _lastRewardBlock;
+        uint256 rewardPerBlock = _stakeRewardPerBlock;
+        uint256 rewardLeft = _stakeRewardLeft;
+        uint256 blockNum = block.number;
+
+        if (_finalRewardBlock > 0) {
+            blockNum = _finalRewardBlock;
+        }
+
         if (_totalStake == 0) {
             _lastRewardBlock = block.number;
             return;
@@ -141,8 +152,13 @@ contract Founder is Ownable {
         }
 
         uint256 multiplier = block.number.sub(lastRewardBlock);
-        uint256 reward = multiplier.mul(_stakeRewardPerBlock);
+        uint256 reward = multiplier.mul(rewardPerBlock);
+        if (reward > rewardLeft) {
+            reward = rewardLeft.div(rewardPerBlock).mul(rewardPerBlock);
+            _finalRewardBlock = lastRewardBlock.add(reward.div(rewardPerBlock));
+        }
 
+        _stakeRewardLeft = rewardLeft.sub(reward);
         _accAmountPerShare = _accAmountPerShare.add(reward.mul(1e12).div(_totalStake));
         _lastRewardBlock = block.number;
         _rewardToken.mint(address(this), reward);
@@ -204,7 +220,7 @@ contract Founder is Ownable {
         update();
 
         uint256 pending = staker.amount.mul(_accAmountPerShare).div(1e12).sub(staker.rewardDebt);
-        staker.rewardDebt = 0;
+        staker.rewardDebt = staker.amount.mul(_accAmountPerShare).div(1e12);
 
         _stakeRewardMinted = _stakeRewardMinted.add(pending);
         _rewardToken.safeTransfer(msg.sender, pending); // return pending reward
