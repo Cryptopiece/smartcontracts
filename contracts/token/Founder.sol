@@ -6,8 +6,6 @@ import "openzeppelin-solidity/contracts/token/ERC20/SafeERC20.sol";
 import "openzeppelin-solidity/contracts/math/SafeMath.sol";
 import "openzeppelin-solidity/contracts/access/Ownable.sol";
 
-import "hardhat/console.sol";
-
 contract Founder is Ownable {
     using SafeMath for uint256;
     using SafeERC20 for IERC20Mintable;
@@ -112,7 +110,7 @@ contract Founder is Ownable {
     function getTotalPoolReward(PoolInfo memory pool) internal view returns (uint256 poolReward) {
          uint256 totalReward = (block.number - _startBlock).mul(_poolRewardPerBlock);
 
-        poolReward = totalReward.div(_totalShare).mul(pool.shares);
+        poolReward = totalReward.mul(pool.shares).div(_totalShare);
     }
 
     function redeemPoolReward() external {

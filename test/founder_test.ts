@@ -140,7 +140,7 @@ describe('founder contract', function () {
         chai.expect(stakerBalance.eq(rewardPerBlock.div(2))).true;
     });
     
-    it.only('should be able to withdraw staking reward multiple time', async function () {
+    it('should be able to withdraw staking reward multiple time', async function () {
         const [deployer, staker] = await ethers.getSigners();
 
         const rewardCap = BigNumber.from(10).pow(19);

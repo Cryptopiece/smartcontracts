@@ -7,8 +7,8 @@ async function main() {
     const [ deployer ] = await ethers.getSigners();
     console.log('deploy from address: ', deployer.address);
 
-    const SporesToken = await ethers.getContractFactory("FTXFToken");
-    const token = await SporesToken.deploy();
+    const Token = await ethers.getContractFactory("FTXFToken");
+    const token = await Token.deploy(deployer.address);
     console.log('FTXFToken address: ', token.address);
     Config.setConfig(network +'.FTXFToken', token.address);
 
