@@ -1,4 +1,4 @@
-# Smartcontract project for FTX FUND
+# Smartcontract project for Cointop3360
 
 # Requirement
 
