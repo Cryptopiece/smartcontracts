@@ -7,10 +7,10 @@ async function main() {
     const [ deployer ] = await ethers.getSigners();
     console.log('deploy from address: ', deployer.address);
 
-    const Token = await ethers.getContractFactory("FTXFToken");
-    const token = await Token.deploy(deployer.address);
-    console.log('FTXFToken address: ', token.address);
-    Config.setConfig(network +'.FTXFToken', token.address);
+    const Token = await ethers.getContractFactory("CoinTop360");
+    const token = await Token.deploy();
+    console.log('CoinTop360 address: ', token.address);
+    Config.setConfig(network +'.CoinTop360', token.address);
 
     await Config.updateConfig();
 }
