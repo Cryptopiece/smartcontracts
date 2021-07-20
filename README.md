@@ -1,4 +1,4 @@
-# Smartcontract project for Cointop3360
+# Smartcontract project for Cointop360
 
 # Requirement
 
