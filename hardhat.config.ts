@@ -28,6 +28,12 @@ module.exports = {
             accounts: [process.env.PRIV_KEY],
             gasPrice: 10000000000,
             blockGasLimit: 1000000
+        },
+        main: {
+            url: "https://bsc-dataseed1.binance.org/",
+            accounts: [process.env.PRIV_KEY],
+            gasPrice: 5100000000,
+            blockGasLimit: 1000000
         }
     },
 
