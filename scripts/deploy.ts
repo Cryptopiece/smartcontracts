@@ -7,10 +7,10 @@ async function main() {
     const [ deployer ] = await ethers.getSigners();
     console.log('deploy from address: ', deployer.address);
 
-    const Token = await ethers.getContractFactory("CoinTop360");
+    const Token = await ethers.getContractFactory("Belly");
     const token = await Token.deploy();
-    console.log('CoinTop360 address: ', token.address);
-    Config.setConfig(network +'.CoinTop360', token.address);
+    console.log('Belly address: ', token.address);
+    Config.setConfig(network +'.Belly', token.address);
 
     await Config.updateConfig();
 }
