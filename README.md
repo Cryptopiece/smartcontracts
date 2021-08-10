@@ -1,4 +1,4 @@
-# Smartcontract project for Cointop360
+# Smartcontract project for CryptoPiece
 
 # Requirement
 
