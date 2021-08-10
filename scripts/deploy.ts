@@ -7,10 +7,17 @@ async function main() {
     const [ deployer ] = await ethers.getSigners();
     console.log('deploy from address: ', deployer.address);
 
-    const Token = await ethers.getContractFactory("Belly");
-    const token = await Token.deploy();
-    console.log('Belly address: ', token.address);
-    Config.setConfig(network +'.Belly', token.address);
+    const Belly = await ethers.getContractFactory("Belly");
+    const belly = await Belly.deploy();
+    console.log('Belly address: ', belly.address);
+
+
+
+    const Mercenary = await ethers.getContractFactory("Mercenary");
+    const mercenary = await Mercenary.deploy();
+    console.log('Mercenary address: ', mercenary.address);
+
+    Config.setConfig(network +'.Mercenary', mercenary.address);
 
     await Config.updateConfig();
 }
