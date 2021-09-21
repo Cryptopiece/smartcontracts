@@ -81,9 +81,9 @@ contract Belly is ERC20("Belly", "Belly"), ERC20Burnable ,
             address[] memory path = new address[](2);
             path[0] = address(this);
             path[1] = wbnbAddress;
-            router.swapTokensForExactETH(amount.mul(marketingTaxFee).div(100),0,path,marketingAddress,block.timestamp);
-            router.swapTokensForExactETH(amount.mul(bossRaidTaxFee).div(100),0,path,bossRaidAddress,block.timestamp);
-            router.swapTokensForExactETH(amount.mul(treasureTaxFee).div(100),0,path,treasureAddress,block.timestamp);
+            router.swapExactTokensForETH(amount.mul(marketingTaxFee).div(100),0,path,marketingAddress,block.timestamp);
+            router.swapExactTokensForETH(amount.mul(bossRaidTaxFee).div(100),0,path,bossRaidAddress,block.timestamp);
+            router.swapExactTokensForETH(amount.mul(treasureTaxFee).div(100),0,path,treasureAddress,block.timestamp);
             
         }   
         return super.transfer(recipient,amount);    
