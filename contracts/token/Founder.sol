@@ -28,6 +28,17 @@ contract Founder is Ownable {
         _;
     }
 
+
+    function multiTransferAndLock(address _lockedAddress, uint256[] memory _amountArr, uint256[] memory _releaseDaysArr) public onlyOwner onLockedRemain
+    {
+        if(_amountArr.length !=0 && _releaseDaysArr.length !=0 && _amountArr.length == _releaseDaysArr.length)
+        {
+            for(uint i=0; i<_amountArr.length; i++){
+                transferAndLock(_lockedAddress, _amountArr[i], _releaseDaysArr[i]);
+            }
+        }
+    }
+
     function transferAndLock(address _lockedAddress,uint256 _amount,uint _releaseDays) public onlyOwner onLockedRemain
     {
         uint releasedDate = (_releaseDays.mul(1 days)).add(block.timestamp);

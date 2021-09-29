@@ -75,6 +75,53 @@ describe('Founder contract', function() {
         chai.expect(availableAmount.eq(BigNumber.from(0).pow(18))).true;
     });
 
-    
+    it('multiTransferAndLock function with _amountArr[1,2,3] and _releaseDaysArr[1,2,3]', async function(){
+        const [owner,teamer] = await ethers.getSigners();
+        const [token,founder] = await deployFounder(owner);
+        
+        founder.setRewardToken(token.address);
+        token.transfer(founder.address,BigNumber.from(20).pow(19));
+        var amount1 = BigNumber.from(1).mul(BigNumber.from(10).pow(18));
+        var amount2 = BigNumber.from(2).mul(BigNumber.from(10).pow(18));
+        var amount3 = BigNumber.from(3).mul(BigNumber.from(10).pow(18));
+        var _amountArr:BigNumber[] = [amount1,amount2,amount3];
+        var _releaseDaysArr:number[] = [1,2,3];
+        founder.multiTransferAndLock(teamer.address,_amountArr,_releaseDaysArr);
+        
+        const founderTeamer = founder.connect(teamer);
+        
+        const lockedFullAmount = await founder.getLockedFullAmount(teamer.address);
+        chai.expect(lockedFullAmount.eq(BigNumber.from(6).mul(BigNumber.from(10).pow(18)))).true;
+    });
+
+
+    it('multiTransferAndLock function with _amountArr[1,2,3] and _releaseDaysArr[1,2,3] and release _releaseDays with index 0,1', async function(){
+        const [owner,teamer] = await ethers.getSigners();
+        const [token,founder] = await deployFounder(owner);
+        
+        founder.setRewardToken(token.address);
+        token.transfer(founder.address,BigNumber.from(20).pow(19));
+        var amount1 = BigNumber.from(1).mul(BigNumber.from(10).pow(18));
+        var amount2 = BigNumber.from(2).mul(BigNumber.from(10).pow(18));
+        var amount3 = BigNumber.from(3).mul(BigNumber.from(10).pow(18));
+        var _amountArr:BigNumber[] = [amount1,amount2,amount3];
+        var _releaseDaysArr:number[] = [1,2,3];
+        founder.multiTransferAndLock(teamer.address,_amountArr,_releaseDaysArr);
+        const availableAmount = await founder.getAvailableAmount(teamer.address);
+        console.log("availableAmount: "+availableAmount);
+        ethers.provider.send("evm_increaseTime", [2*24*60*60]);   // add 60 seconds
+        ethers.provider.send("evm_mine",[]);  
+          
+        const founderTeamer = founder.connect(teamer);
+        founderTeamer.releaseAllMyToken(); 
+        const availableAmount2 = await founder.getAvailableAmount(teamer.address);
+        console.log("availableAmount2: "+availableAmount2);   
+
+        const bellyOfTeamer = await token.balanceOf(teamer.address);
+        
+        chai.expect(bellyOfTeamer.eq(BigNumber.from(3).mul(BigNumber.from(10).pow(18)))).true;
+    });
+
+
     
  });
