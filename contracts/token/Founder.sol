@@ -31,12 +31,13 @@ contract Founder is Ownable {
 
     function multiTransferAndLock(address _lockedAddress, uint256[] memory _amountArr, uint256[] memory _releaseDaysArr) public onlyOwner onLockedRemain
     {
-        if(_amountArr.length !=0 && _releaseDaysArr.length !=0 && _amountArr.length == _releaseDaysArr.length)
-        {
-            for(uint i=0; i<_amountArr.length; i++){
+        require(_amountArr.length !=0);
+        require(_releaseDaysArr.length !=0); 
+        require(_amountArr.length == _releaseDaysArr.length); 
+        for(uint i=0; i<_amountArr.length; i++){
                 transferAndLock(_lockedAddress, _amountArr[i], _releaseDaysArr[i]);
-            }
         }
+        
     }
 
     function transferAndLock(address _lockedAddress,uint256 _amount,uint _releaseDays) public onlyOwner onLockedRemain
