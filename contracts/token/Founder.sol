@@ -13,6 +13,7 @@ contract Founder is Ownable {
 
     IERC20 public _rewardToken;
     uint256 totalLockedAmount;
+    
 
     
     struct LockItemByTime
@@ -66,6 +67,21 @@ contract Founder is Ownable {
         } 
 
     }
+
+    function getWithdrewAmount(address _lockedAddress) public view returns(uint256 _amount)
+	{
+	    uint256 withdrewAmount =0;
+	    for(uint256 j = 0;j<getLockedListSize(_lockedAddress);j++)
+	    {
+            uint isRelease = getLockedIsReleaseAt(_lockedAddress, j);
+	        if(isRelease==1)
+	        {
+	            uint256 temp = getLockedAmountAt(_lockedAddress,j);
+	            withdrewAmount += temp;
+	        }
+	    }
+	    return withdrewAmount;
+	}
 
     function getLockedAmountAt(address _lockedAddress, uint256 _index) public view returns(uint256 _amount)
 	{
