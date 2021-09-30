@@ -11,7 +11,9 @@ async function main() {
     const belly = await Belly.deploy();
     console.log('Belly address: ', belly.address);
 
-
+    const Founder = await ethers.getContractFactory("Founder");
+    const founder = await Founder.deploy();
+    console.log('Founder address: ', founder.address);
 
     const Mercenary = await ethers.getContractFactory("Mercenary");
     const mercenary = await Mercenary.deploy();
