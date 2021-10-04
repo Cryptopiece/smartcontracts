@@ -1,11 +1,16 @@
 //SPDX-License-Identifier: UNLICENSED
-pragma solidity ^0.7.5;
+pragma solidity >=0.7.5<=0.8.9;
 import "openzeppelin-solidity/contracts/token/ERC721/ERC721.sol";
 import "openzeppelin-solidity/contracts/access/Ownable.sol";
 import "openzeppelin-solidity/contracts/token/ERC20/IERC20.sol";
 
+
 contract Mercenary is ERC721 ,Ownable {
-      
+
+    IERC20 public _token;
+    mapping (address => uint256) public eggs;
+    uint256 eggPrice;
+
 
     constructor() ERC721("CryptoPiece Mercenary", "Mercenary") {
     }
@@ -15,6 +20,25 @@ contract Mercenary is ERC721 ,Ownable {
         _setTokenURI(itemId, tokenURI);
         return itemId;
     }
+
+    function setToken(IERC20 token) public onlyOwner{
+        _token = token;
+    }
+
+    function buyEgg() public returns (bool){
+        uint256 allowance = _token.allowance(msg.sender, address(this));
+        require(allowance >= eggPrice, "Your Belly is not enough to buy it.");
+        require(_token.transferFrom(msg.sender, address(this), eggPrice), "Unable to transfer token.");
+        eggs[msg.sender] += 1;
+        return true;
+    }
+
+    function openEgg(address buyer) public onlyOwner returns(bool){
+        require(eggs[buyer] > 0, "The eggs is not enough to open.");
+        eggs[buyer] -= 1;
+        return true;
+    }
+
     function withdraw() public onlyOwner {
         msg.sender.transfer(address(this).balance);
     }
