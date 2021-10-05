@@ -30,15 +30,16 @@ describe('Mercenary contract', function() {
         const [owner,teamer] = await ethers.getSigners();
         const [token,mercenary] = await deployMercenary(owner);
         
-        mercenary.setToken(token.address);
-        token.transfer(teamer.address,BigNumber.from(4000).mul(BigNumber.from(10).pow(18)));
+        await mercenary.setToken(token.address);
+        await mercenary.setEggPrice(BigNumber.from(4000).mul(BigNumber.from(10).pow(18)));
+        await token.transfer(teamer.address,BigNumber.from(10000).mul(BigNumber.from(10).pow(18)));
         
         const tokenTeamer = token.connect(teamer);
 
-        tokenTeamer.approve(mercenary.address, token.balanceOf(teamer.address));
-
+        await tokenTeamer.approve(mercenary.address, await token.balanceOf(teamer.address));
+        
         const mercenaryTeamer = mercenary.connect(teamer);
-        mercenaryTeamer.buyEgg();
+        await mercenaryTeamer.buyEgg();
         
         const eggAmount = await mercenary.eggs(teamer.address);
         chai.expect(eggAmount.eq(1)).true;
@@ -49,6 +50,7 @@ describe('Mercenary contract', function() {
         const [token,mercenary] = await deployMercenary(owner);
         
         await  mercenary.setToken(token.address);
+        await mercenary.setEggPrice(BigNumber.from(4000).mul(BigNumber.from(10).pow(18)));
         await  token.transfer(teamer.address,BigNumber.from(4000).mul(BigNumber.from(10).pow(18)));
         
         const tokenTeamer = token.connect(teamer);
@@ -60,10 +62,9 @@ describe('Mercenary contract', function() {
 
         const mercenaryOwner = mercenary.connect(owner);
         await mercenaryOwner.openEgg(teamer.address);
-
         
         const eggAmount = await mercenary.eggs(teamer.address);
-        console.log("eggsAmount1: "+eggAmount);
+
         chai.expect(eggAmount.eq(0)).true;
     });
 
@@ -72,7 +73,8 @@ describe('Mercenary contract', function() {
         const [token,mercenary] = await deployMercenary(owner);
         
         await  mercenary.setToken(token.address);
-        await  token.transfer(teamer.address,BigNumber.from(4000).mul(BigNumber.from(10).pow(18)));
+        await mercenary.setEggPrice(BigNumber.from(4000).mul(BigNumber.from(10).pow(18)));
+        await  token.transfer(teamer.address,BigNumber.from(10000).mul(BigNumber.from(10).pow(18)));
         
         const tokenTeamer = token.connect(teamer);
 
@@ -86,8 +88,6 @@ describe('Mercenary contract', function() {
 
         const eggAmount = await mercenary.eggs(teamer.address);
         const tmp =  await mercenary.ownerOf(1225) ;
-        console.log("tmp: "+tmp);
-        console.log("teamer.address: "+teamer.address);
         
         chai.expect(tmp==teamer.address);
         

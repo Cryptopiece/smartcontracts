@@ -9,10 +9,16 @@ contract Mercenary is ERC721 ,Ownable {
 
     IERC20 public _token;
     mapping (address => uint256) public eggs;
-    uint256 eggPrice;
+    uint256 _eggPrice;
 
 
     constructor() ERC721("CryptoPiece Mercenary", "Mercenary") {
+    }
+
+    function setEggPrice(uint256 eggPrice) public onlyOwner returns(bool)
+    {
+        _eggPrice = eggPrice;
+        return true;
     }
 
     function awardItem(address player, uint256 itemId ,  string memory tokenURI) onlyOwner public returns (uint256 newItemId)  {
@@ -26,9 +32,8 @@ contract Mercenary is ERC721 ,Ownable {
     }
 
     function buyEgg() public returns (bool){
-        uint256 allowance = _token.allowance(msg.sender, address(this));
-        require(allowance >= eggPrice, "Your Belly is not enough to buy it.");
-        require(_token.transferFrom(msg.sender, address(this), eggPrice), "Unable to transfer token.");
+        
+        require(_token.transferFrom(msg.sender, address(this), _eggPrice), "Unable to transfer token.");
         eggs[msg.sender] += 1;
         return true;
     }
