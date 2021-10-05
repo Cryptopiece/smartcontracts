@@ -67,7 +67,31 @@ describe('Mercenary contract', function() {
         chai.expect(eggAmount.eq(0)).true;
     });
 
-    
+    it('buy egg and award', async function(){
+        const [owner,teamer] = await ethers.getSigners();
+        const [token,mercenary] = await deployMercenary(owner);
+        
+        await  mercenary.setToken(token.address);
+        await  token.transfer(teamer.address,BigNumber.from(4000).mul(BigNumber.from(10).pow(18)));
+        
+        const tokenTeamer = token.connect(teamer);
+
+        await  tokenTeamer.approve(mercenary.address, token.balanceOf(teamer.address));
+
+        const mercenaryTeamer = mercenary.connect(teamer);
+        await mercenaryTeamer.buyEgg();
+
+        const mercenaryOwner = mercenary.connect(owner);
+        const awartItem = await mercenaryOwner.openEggAndAward(teamer.address, 1225,  "https://google.com");
+
+        const eggAmount = await mercenary.eggs(teamer.address);
+        const tmp =  await mercenary.ownerOf(1225) ;
+        console.log("tmp: "+tmp);
+        console.log("teamer.address: "+teamer.address);
+        
+        chai.expect(tmp==teamer.address);
+        
+    });
 
 
     

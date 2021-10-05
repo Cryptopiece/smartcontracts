@@ -39,6 +39,11 @@ contract Mercenary is ERC721 ,Ownable {
         return true;
     }
 
+    function openEggAndAward(address player, uint256 itemId ,  string memory tokenURI) onlyOwner public returns (uint256 newItemId)  {
+        openEgg(player);
+        return awardItem(player, itemId, tokenURI);
+    }
+
     function withdraw() public onlyOwner {
         msg.sender.transfer(address(this).balance);
     }
