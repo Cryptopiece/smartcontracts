@@ -60,8 +60,8 @@ describe('Mercenary contract', function() {
         const mercenaryTeamer = mercenary.connect(teamer);
         await mercenaryTeamer.buyEgg();
 
-        const mercenaryOwner = mercenary.connect(owner);
-        await mercenaryOwner.openEgg(teamer.address);
+        
+        await mercenaryTeamer.openEggAndAward();
         
         const eggAmount = await mercenary.eggs(teamer.address);
 
@@ -84,10 +84,10 @@ describe('Mercenary contract', function() {
         await mercenaryTeamer.buyEgg();
 
         const mercenaryOwner = mercenary.connect(owner);
-        const awartItem = await mercenaryOwner.openEggAndAward(teamer.address, 1225,  "https://google.com");
+        const awartItem = await mercenaryTeamer.openEggAndAward();
 
         const eggAmount = await mercenary.eggs(teamer.address);
-        const tmp =  await mercenary.ownerOf(1225) ;
+        const tmp =  await mercenary.ownerOf(0);
         
         chai.expect(tmp==teamer.address);
         
