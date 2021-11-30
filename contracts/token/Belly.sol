@@ -11,30 +11,14 @@ import "openzeppelin-solidity/contracts/token/ERC20/ERC20Burnable.sol";
 contract Belly is ERC20("Belly", "Belly"), ERC20Burnable ,
         ERC20Capped( 1000000000*10**uint256(18)), Ownable {
     using SafeMath for uint256;
-    uint256 startTime = 0; 
-    uint256 period = 1 days; 
-
+    
     constructor() {
-	    _mint(msg.sender,570000000*10**uint256(18));
-        startTime = block.timestamp;
+	    _mint(msg.sender,1000000000*10**uint256(18));        
         transferOwnership(msg.sender);
     }
 
     function _beforeTokenTransfer(address from, address to, uint256 amount) internal override(ERC20, ERC20Capped) {
         super._beforeTokenTransfer(from, to, amount);
-    }
-
-     function mint(address to, uint256 amount) public onlyOwner {
-       require(maxTotalSupply(block.timestamp)>totalSupply()+amount,"Can't mint more than maxTotalSupply");
-       _mint(to,amount);
-    }
-    function countDuration(uint256 time)  public view returns (uint256 count){
-        count = (time - startTime)/period;
-        return count;      
-    }
-    function maxTotalSupply(uint256 time)  public view returns (uint256 maxSupply){
-        maxSupply = 570000000*(10**uint256(18)) + countDuration(time)*1000000*(10**uint256(18));
-        return maxSupply;      
-    }
+    }  
     
 }
