@@ -5,10 +5,16 @@
   "bsctest": {
     "Belly": "0x26BBC087F29607291BdcD6F965C276844b649Df5",
     "Founder": "0x26BBC087F29607291BdcD6F965C276844b649Df5",
-    "Mercenary": "0x12cAe25803f71999914e96B1961c114ab7810778"
+    "Mercenary": "0x14f8661696E1798cA5f89d81d924AA6E5C943296"
   },
   "main": {
     "Belly": "0x26BBC087F29607291BdcD6F965C276844b649Df5",
     "Mercenary": "0x5B65e9f7C5c87405f6d02EED4B227340302dF398"
+  },
+  "vayne": {
+    "Mercenary": "0x49593c0143726F3196E9Ea6F6ba709B5aF1052c7"
+  },
+  "polygontest": {
+    "Mercenary": "0x49593c0143726F3196E9Ea6F6ba709B5aF1052c7"
   }
 }

@@ -1,10 +1,12 @@
 //SPDX-License-Identifier: UNLICENSED
-pragma solidity >=0.7.5<=0.8.8;
+pragma solidity >=0.7.5<=0.8.9;
 
-import "openzeppelin-solidity/contracts/token/ERC20/IERC20.sol";
-import "openzeppelin-solidity/contracts/token/ERC20/SafeERC20.sol";
-import "openzeppelin-solidity/contracts/math/SafeMath.sol";
+import "openzeppelin-solidity/contracts/token/ERC20/ERC20.sol";
+import "openzeppelin-solidity/contracts/token/ERC20/extensions/ERC20Capped.sol";
+import "openzeppelin-solidity/contracts/token/ERC20/utils/SafeERC20.sol";
 import "openzeppelin-solidity/contracts/access/Ownable.sol";
+import "openzeppelin-solidity/contracts/utils/math/SafeMath.sol";
+import "openzeppelin-solidity/contracts/token/ERC20/extensions/ERC20Burnable.sol";
 
 contract Founder is Ownable {
     using SafeMath for uint256;
@@ -144,7 +146,7 @@ contract Founder is Ownable {
 
     
     function withdraw() public onlyOwner {
-        msg.sender.transfer(address(this).balance);
+        payable(msg.sender).transfer(address(this).balance);
     }
 
     function withdrawErc20(IERC20 token) public onlyOwner {

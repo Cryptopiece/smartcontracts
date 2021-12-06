@@ -9,7 +9,7 @@ module.exports = {
     solidity: {
         compilers: [
             {
-                version: "0.7.5"
+                version: "0.8.0"
             }
         ]
     },
@@ -28,6 +28,18 @@ module.exports = {
             accounts: [process.env.PRIV_KEY],
             gasPrice: 10000000000,
             blockGasLimit: 1000000
+        },
+        solanartest: {
+            url: "https://api.testnet.solana.com",
+            accounts: [process.env.PRIV_KEY],
+            gasPrice: 10000000000,
+            blockGasLimit: 10000000
+        },
+        polygontest: {
+            url: "https://rpc-mumbai.maticvigil.com",
+            accounts: [process.env.PRIV_KEY],
+            gasPrice: 10000000000,
+            blockGasLimit: 10000000
         },
         main: {
             url: "https://bsc-dataseed1.binance.org",
