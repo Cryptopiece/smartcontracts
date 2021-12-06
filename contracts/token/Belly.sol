@@ -12,7 +12,6 @@ contract Belly is ERC20("Belly", "Belly"), ERC20Burnable ,
          Ownable {
     using SafeMath for uint256;
     
-
     constructor() {
 	    _mint(msg.sender,1000000000*10**uint256(18));        
         transferOwnership(msg.sender);
