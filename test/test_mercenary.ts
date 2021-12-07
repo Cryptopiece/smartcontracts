@@ -32,6 +32,7 @@ describe('Mercenary contract', function() {
         
         await mercenary.setToken(token.address);
         await mercenary.setEggPrice(BigNumber.from(1).mul(BigNumber.from(10).pow(18)));
+        await mercenary.setFlag(true);
         await token.transfer(teamer.address,BigNumber.from(10000).mul(BigNumber.from(10).pow(18)));
         
         const tokenTeamer = token.connect(teamer);
@@ -51,6 +52,7 @@ describe('Mercenary contract', function() {
         
         await mercenary.setToken(token.address);
         await mercenary.setEggPrice(BigNumber.from(1).mul(BigNumber.from(10).pow(18)));
+        await mercenary.setFlag(true);
         await token.transfer(teamer.address,BigNumber.from(10000).mul(BigNumber.from(10).pow(18)));
         
         const tokenTeamer = token.connect(teamer);
@@ -71,6 +73,7 @@ describe('Mercenary contract', function() {
         
         await  mercenary.setToken(token.address);
         await mercenary.setEggPrice(BigNumber.from(1).mul(BigNumber.from(10).pow(18)));
+        await mercenary.setFlag(true);
         await  token.transfer(teamer.address,BigNumber.from(4000).mul(BigNumber.from(10).pow(18)));
         
         const tokenTeamer = token.connect(teamer);
@@ -95,6 +98,7 @@ describe('Mercenary contract', function() {
         
         await  mercenary.setToken(token.address);
         await mercenary.setEggPrice(BigNumber.from(1).mul(BigNumber.from(10).pow(18)));
+        await mercenary.setFlag(true);
         await  token.transfer(teamer.address,BigNumber.from(4000).mul(BigNumber.from(10).pow(18)));
         
         const tokenTeamer = token.connect(teamer);
@@ -117,6 +121,7 @@ describe('Mercenary contract', function() {
         
         await  mercenary.setToken(token.address);
         await mercenary.setEggPrice(BigNumber.from(1).mul(BigNumber.from(10).pow(18)));
+        await mercenary.setFlag(true);
         await  token.transfer(teamer.address,BigNumber.from(4000).mul(BigNumber.from(10).pow(18)));
         
         const tokenTeamer = token.connect(teamer);
@@ -156,6 +161,7 @@ describe('Mercenary contract', function() {
         
         await  mercenary.setToken(token.address);
         await mercenary.setEggPrice(BigNumber.from(1).mul(BigNumber.from(10).pow(18)));
+        await mercenary.setFlag(true);
         await  token.transfer(teamer.address,BigNumber.from(10000).mul(BigNumber.from(10).pow(18)));
         
         const tokenTeamer = token.connect(teamer);

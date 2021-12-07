@@ -17,6 +17,7 @@ contract Mercenary is ERC721Enumerable,Ownable
     IERC20 public _token;
     mapping (address => uint256) public eggs;
     uint256 public _eggPrice;
+    bool public _flag = false;
     event OpenEgg(
         address indexed _from,
         uint256 indexed _id
@@ -26,6 +27,10 @@ contract Mercenary is ERC721Enumerable,Ownable
 
     Counters.Counter private _tokenIdTracker;
     constructor() ERC721("CryptoPiece Mercenary", "Mercenary") {
+    }
+
+    function setFlag(bool flag) public onlyOwner{
+        _flag = flag;
     }
 
     function setEggPrice(uint256 eggPrice) public onlyOwner returns(bool)
@@ -47,7 +52,7 @@ contract Mercenary is ERC721Enumerable,Ownable
     }
 
     function buyEgg(uint256 quantityEggs) public returns (bool){
-        
+        require(_flag == true, "You can not buy any Mercenary.");
         require(_token.transferFrom(msg.sender, address(this), (_eggPrice.mul(quantityEggs))), "Unable to transfer token.");
         eggs[msg.sender] += quantityEggs;
         return true;
