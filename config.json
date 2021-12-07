@@ -6,11 +6,7 @@
   "bsctest": {
     "Belly": "0x26BBC087F29607291BdcD6F965C276844b649Df5",
     "Founder": "0x26BBC087F29607291BdcD6F965C276844b649Df5",
-<<<<<<< HEAD
     "Mercenary": "0x14f8661696E1798cA5f89d81d924AA6E5C943296"
-=======
-    "Mercenary": "0xfea83A3b4eCe17A81BdB1138700FE950f589f32e"
->>>>>>> a9b61692f9e942cd8fdfd33a8c7b6aff7eba8c66
   },
   "main": {
     "Belly": "0x26BBC087F29607291BdcD6F965C276844b649Df5",

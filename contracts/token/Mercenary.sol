@@ -52,7 +52,7 @@ contract Mercenary is ERC721Enumerable,Ownable
     }
 
     function buyEgg(uint256 quantityEggs) public returns (bool){
-        require(_flag == true, "You can not buy any Mercenary.");
+        require(quantityEggs > 1 &&_flag == true, "You can not buy any Mercenary.");
         require(_token.transferFrom(msg.sender, address(this), (_eggPrice.mul(quantityEggs))), "Unable to transfer token.");
         eggs[msg.sender] += quantityEggs;
         return true;

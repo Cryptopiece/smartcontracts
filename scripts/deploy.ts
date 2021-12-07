@@ -19,9 +19,9 @@ async function main() {
     const mercenary = await Mercenary.deploy();
     console.log('Mercenary address: ', mercenary.address);
     await mercenary.deployed();
-    Config.setConfig(network +'.Mercenary', mercenary.address);
+    // Config.setConfig(network +'.Mercenary', mercenary.address);
 
-    await Config.updateConfig();
+    // await Config.updateConfig();
 }
 
 main().then(() => process.exit(0))
