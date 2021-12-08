@@ -140,6 +140,7 @@ describe("Market Contract", () => {
 
         // Init balance
         const initBalance = parseEther('10000')
+        const marketInitBalance = await belly.balanceOf(market.address)
 
         await belly.transfer(alice.address, initBalance);
         await belly.transfer(bob.address, initBalance);
@@ -185,9 +186,11 @@ describe("Market Contract", () => {
 
         const aliceBalance = await belly.balanceOf(alice.address)
         const bobBalance = await belly.balanceOf(bob.address)
+        const marketBalance = await belly.balanceOf(market.address)
 
-        chai.expect(aliceBalance.sub(initBalance).eq(parseEther('5200'))).true  // - 400 * 2 + 6000
+        chai.expect(aliceBalance.sub(initBalance).eq(parseEther('4780'))).true  // - 400 * 2 + 6000 * 0.93
         chai.expect(initBalance.sub(bobBalance).eq(parseEther('6400'))).true    // - 400 - 6000
+        chai.expect(marketBalance.sub(marketInitBalance).eq(parseEther('420'))).true // 6000 * 0.07 
 
     })
 

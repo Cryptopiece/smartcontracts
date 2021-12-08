@@ -15,8 +15,10 @@ contract Market is IERC721Receiver {
     struct StakeDetail {
         address payable author;
         uint256 price;
+        uint256 tokenId;
     }
 
+    uint256 public commissionRate = 7; // percentage
     uint256[] public stakedNft;
     mapping ( uint256 => StakeDetail ) stakeDetail;
 
@@ -57,26 +59,26 @@ contract Market is IERC721Receiver {
         return total;
     }
 
-    function getStakedNft() view public returns (uint256 [] memory) {
+    function getStakedNft() view public returns (StakeDetail [] memory) {
         uint256 length = getStakingAmount();
-        uint256[] memory myNft = new uint256[](length);
+        StakeDetail[] memory myNft = new StakeDetail[](length);
         uint count = 0;
 
         for (uint256 index = 0; index < stakedNft.length; index++) {
-            myNft[count++] = stakedNft[index];
+            myNft[count++] = stakeDetail[stakedNft[index]];
         }
         
         return myNft;
     }
 
-    function getStakedNft(address _address) view public returns (uint256 [] memory) {
+    function getStakedNft(address _address) view public returns (StakeDetail [] memory) {
         uint256 length = getStakingAmount(_address);
-        uint256[] memory myNft = new uint256[](length);
+        StakeDetail[] memory myNft = new StakeDetail[](length);
         uint count = 0;
 
         for (uint256 index = 0; index < stakedNft.length; index++) {
             if (stakeDetail[stakedNft[index]].author == _address) {
-                myNft[count++] = stakedNft[index];
+                myNft[count++] = stakeDetail[stakedNft[index]];
             }
         }
         
@@ -119,7 +121,7 @@ contract Market is IERC721Receiver {
         require(mercenary.getApproved(_tokenId) == address(this));
 
         push(stakedNft, _tokenId);
-        stakeDetail[_tokenId] = StakeDetail(payable(msg.sender), _price);
+        stakeDetail[_tokenId] = StakeDetail(payable(msg.sender), _price, _tokenId);
 
         mercenary.safeTransferFrom(msg.sender, address(this), _tokenId);
     }
@@ -137,11 +139,14 @@ contract Market is IERC721Receiver {
         require(token.balanceOf(msg.sender) >= _price, "Insufficient account balance");
         require(mercenary.ownerOf(_tokenId) == address(this), "This NFT doesn't exist on market");
         require(stakeDetail[_tokenId].price <= _price, "Minimum price has not been reached");
-        require(token.allowance(msg.sender, stakeDetail[_tokenId].author) >= _price, "Insufficient allowance");
+
+        require(token.allowance(msg.sender, stakeDetail[_tokenId].author) >= _price * (100 - commissionRate) / 100, "Insufficient allowance for author");
+        require(token.allowance(msg.sender, address(this)) >= _price * commissionRate / 100, "Insufficient allowance for market owner");
 
         pop(stakedNft, _tokenId);
         
-        token.transferFrom(msg.sender, stakeDetail[_tokenId].author, _price);
+        token.transferFrom(msg.sender, stakeDetail[_tokenId].author, _price * (100 - commissionRate) / 100);
+        token.transferFrom(msg.sender, address(this), _price * commissionRate / 100);
         mercenary.safeTransferFrom(address(this), msg.sender, _tokenId);
     }
 
