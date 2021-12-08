@@ -30,7 +30,7 @@ contract Market is IERC721Receiver {
         address from,
         uint256 tokenId,
         bytes calldata data
-    ) external override returns (bytes4) {
+    ) external override pure returns (bytes4) {
         return
             bytes4(
                 keccak256("onERC721Received(address,address,uint256,bytes)")

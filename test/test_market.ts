@@ -41,9 +41,11 @@ describe("Market Contract", () => {
         // Set allowance
         await belly.connect(player).approve(mercenary.address, belly.balanceOf(player.address));
 
-        // Player buy 2 eggs and open 1 egg to get NFT
-        await mercenary.connect(player).buyEgg();
-        await mercenary.connect(player).buyEgg();
+        // Set allowance to open multiple eggs
+        await mercenary.connect(owner).setFlag(true);
+
+        // // Player buy 2 eggs and open 1 egg to get NFT
+        await mercenary.connect(player).buyEgg(BigNumber.from(2));
         await mercenary.connect(player).openEggAndAward();
 
         chai.expect((await mercenary.balanceOf(player.address)).eq(BigNumber.from(1))).true
@@ -60,8 +62,8 @@ describe("Market Contract", () => {
         await belly.connect(player).approve(mercenary.address, belly.balanceOf(player.address));
 
         // Player buy and open eggs to get NFT
-        await mercenary.connect(player).buyEgg();
-        await mercenary.connect(player).buyEgg();
+        await mercenary.connect(player).buyEgg(BigNumber.from(1));
+        await mercenary.connect(player).buyEgg(BigNumber.from(1));
         await mercenary.connect(player).openEggAndAward();
         await mercenary.connect(player).openEggAndAward();
 
@@ -93,8 +95,8 @@ describe("Market Contract", () => {
         await belly.connect(bob).approve(mercenary.address, belly.balanceOf(bob.address));
 
         // Alice buy and open eggs to get 2 NFTs
-        await mercenary.connect(alice).buyEgg();
-        await mercenary.connect(alice).buyEgg();
+        await mercenary.connect(alice).buyEgg(BigNumber.from(1));
+        await mercenary.connect(alice).buyEgg(BigNumber.from(1));
         await mercenary.connect(alice).openEggAndAward();
         await mercenary.connect(alice).openEggAndAward();
 
@@ -102,7 +104,7 @@ describe("Market Contract", () => {
         await mercenary.connect(alice).approve(market.address, mercenary.tokenOfOwnerByIndex(alice.address, 1));
 
         // Bob buy and open egg to get 1 NFT
-        await mercenary.connect(bob).buyEgg();
+        await mercenary.connect(bob).buyEgg(BigNumber.from(1));
         await mercenary.connect(bob).openEggAndAward();
 
         await mercenary.connect(bob).approve(market.address, mercenary.tokenOfOwnerByIndex(bob.address, 0));
@@ -144,8 +146,8 @@ describe("Market Contract", () => {
         await belly.connect(bob).approve(mercenary.address, belly.balanceOf(bob.address));
 
         // Alice buy and open eggs to get 2 NFTs
-        await mercenary.connect(alice).buyEgg();
-        await mercenary.connect(alice).buyEgg();
+        await mercenary.connect(alice).buyEgg(BigNumber.from(1));
+        await mercenary.connect(alice).buyEgg(BigNumber.from(1));
         await mercenary.connect(alice).openEggAndAward();
         await mercenary.connect(alice).openEggAndAward();
 
@@ -153,7 +155,7 @@ describe("Market Contract", () => {
         await mercenary.connect(alice).approve(market.address, mercenary.tokenOfOwnerByIndex(alice.address, 1));
         
         // Bob buy and open egg to get 1 NFT
-        await mercenary.connect(bob).buyEgg();
+        await mercenary.connect(bob).buyEgg(BigNumber.from(1));
         await mercenary.connect(bob).openEggAndAward();
 
         const bobFirstNFT = await mercenary.tokenOfOwnerByIndex(bob.address, 0)
