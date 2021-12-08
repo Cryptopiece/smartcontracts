@@ -48,6 +48,27 @@ contract Market is IERC721Receiver {
         return total;
     }
 
+    function getStakingAmount() view public returns (uint256) {
+        uint256 total = 0;
+        for (uint256 index = 0; index < stakedNft.length; index++) {
+            total += 1;
+        }
+
+        return total;
+    }
+
+    function getStakedNft() view public returns (uint256 [] memory) {
+        uint256 length = getStakingAmount();
+        uint256[] memory myNft = new uint256[](length);
+        uint count = 0;
+
+        for (uint256 index = 0; index < stakedNft.length; index++) {
+            myNft[count++] = stakedNft[index];
+        }
+        
+        return myNft;
+    }
+
     function getStakedNft(address _address) view public returns (uint256 [] memory) {
         uint256 length = getStakingAmount(_address);
         uint256[] memory myNft = new uint256[](length);

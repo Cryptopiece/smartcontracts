@@ -76,6 +76,9 @@ describe("Market Contract", () => {
         await market.connect(player).stakeNft(mercenary.tokenOfOwnerByIndex(player.address, 0), BigNumber.from(1))
         await market.connect(player).stakeNft(mercenary.tokenOfOwnerByIndex(player.address, 0), BigNumber.from(1))
 
+        // console.log(await market.functions['getStakedNft()']());
+        // console.log(await market.functions['getStakedNft(address)'](player.address));
+
         const marketBalanceAfter = await mercenary.balanceOf(market.address)
         const expected = BigNumber.from(2)
 
