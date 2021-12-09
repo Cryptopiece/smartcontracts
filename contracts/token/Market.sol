@@ -28,10 +28,10 @@ contract Market is IERC721Receiver {
     }
 
     function onERC721Received(
-        address operator,
-        address from,
-        uint256 tokenId,
-        bytes calldata data
+        address,
+        address,
+        uint256,
+        bytes calldata
     ) external override pure returns (bytes4) {
         return
             bytes4(
@@ -51,12 +51,7 @@ contract Market is IERC721Receiver {
     }
 
     function getStakingAmount() view public returns (uint256) {
-        uint256 total = 0;
-        for (uint256 index = 0; index < stakedNft.length; index++) {
-            total += 1;
-        }
-
-        return total;
+        return stakedNft.length;
     }
 
     function getStakedNft() view public returns (StakeDetail [] memory) {
@@ -110,7 +105,9 @@ contract Market is IERC721Receiver {
     function pop(uint256[] storage array, uint256 element) private {
         for (uint256 index = 0; index < array.length; index++) {
             if (array[index] == element) {
-                delete array[index];
+                array[index] = array[array.length - 1];
+                array.pop();
+                // delete array[index];
                 return;
             }
         }

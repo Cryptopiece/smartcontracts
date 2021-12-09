@@ -167,11 +167,15 @@ describe("Market Contract", () => {
 
         // Alice stake 2 NFTs to market with price 5000
         const aliceFirstNFT = await mercenary.tokenOfOwnerByIndex(alice.address, 0)
+        const aliceSecondNFT = await mercenary.tokenOfOwnerByIndex(alice.address, 1)
+        
         await market.connect(alice).stakeNft(aliceFirstNFT, parseEther('5000'))
         await market.connect(alice).stakeNft(mercenary.tokenOfOwnerByIndex(alice.address, 0), parseEther('5000'))
 
         await belly.connect(bob).approve(alice.address, belly.balanceOf(bob.address));
         await belly.connect(bob).approve(market.address, belly.balanceOf(bob.address));
+
+        // console.log(await market.functions['getStakedNft(address)'](player.address));
 
         // Bob buy Alice's NFT on market
         await chai.expect(market.connect(bob).buyNft(aliceFirstNFT, parseEther('20000'))).revertedWith('Insufficient account balance')
@@ -183,6 +187,9 @@ describe("Market Contract", () => {
         chai.expect((await mercenary.balanceOf(market.address)).eq(BigNumber.from(1))).true
         chai.expect((await mercenary.balanceOf(bob.address)).eq(BigNumber.from(2))).true
         chai.expect((await mercenary.balanceOf(alice.address)).eq(BigNumber.from(0))).true
+
+        const remainNftOnMarket = (await market.functions['getStakedNft()']())[0][0].tokenId
+        chai.expect((remainNftOnMarket).eq(aliceSecondNFT)).true
 
         const aliceBalance = await belly.balanceOf(alice.address)
         const bobBalance = await belly.balanceOf(bob.address)
