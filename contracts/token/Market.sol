@@ -20,9 +20,9 @@ contract Market is IERC721Receiver,Ownable {
         uint256 tokenId;
     }
 
-    event StakeNft(uint256 _tokenId, uint256 _price);
-    event UnstakeNft(uint256 _tokenId);
-    event BuyNft(uint256 _tokenId, uint256 _price);
+    event StakeNft(address indexed _from, uint256 _tokenId, uint256 _price);
+    event UnstakeNft(address indexed _from,uint256 _tokenId);
+    event BuyNft(address indexed _from,uint256 _tokenId, uint256 _price);
 
     uint256 public tax = 7; // percentage
     uint256[] public stakedNft;
@@ -128,7 +128,7 @@ contract Market is IERC721Receiver,Ownable {
 
         mercenary.safeTransferFrom(msg.sender, address(this), _tokenId);
 
-        emit StakeNft(_tokenId, _price);
+        emit StakeNft(msg.sender,_tokenId, _price);
     }
 
     function unstakeNft(uint256 _tokenId) public {
@@ -139,7 +139,7 @@ contract Market is IERC721Receiver,Ownable {
 
         mercenary.safeTransferFrom(address(this), msg.sender, _tokenId);
 
-        emit UnstakeNft(_tokenId);
+        emit UnstakeNft(msg.sender,_tokenId);
     }
 
     function buyNft(uint256 _tokenId, uint256 _price) public {
@@ -152,7 +152,7 @@ contract Market is IERC721Receiver,Ownable {
           
         mercenary.safeTransferFrom(address(this), msg.sender, _tokenId);
         pop(stakedNft, _tokenId);
-        emit BuyNft(_tokenId, _price);
+        emit BuyNft(msg.sender,_tokenId, _price);
     }
     function withdraw() public onlyOwner {
         payable(msg.sender).transfer(address(this).balance);
