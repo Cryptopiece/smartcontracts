@@ -1,15 +1,12 @@
 //SPDX-License-Identifier: UNLICENSED
-pragma solidity >=0.7.5<=0.8.9;
+pragma solidity >=0.8.0<=0.8.9;
 
-import "openzeppelin-solidity/contracts/token/ERC20/ERC20.sol";
-import "openzeppelin-solidity/contracts/token/ERC20/extensions/ERC20Capped.sol";
+
 import "openzeppelin-solidity/contracts/token/ERC20/utils/SafeERC20.sol";
 import "openzeppelin-solidity/contracts/access/Ownable.sol";
-import "openzeppelin-solidity/contracts/utils/math/SafeMath.sol";
-import "openzeppelin-solidity/contracts/token/ERC20/extensions/ERC20Burnable.sol";
+
 
 contract Founder is Ownable {
-    using SafeMath for uint256;
     using SafeERC20 for IERC20;
     
 
@@ -26,13 +23,10 @@ contract Founder is Ownable {
     }
     mapping (address => LockItemByTime[]) public lockListByTime;
 
-    modifier onLockedRemain {
-        require(totalLockedAmount < (3000000 * (10**uint256(18))), "Overflow transfer");
-        _;
-    }
+ 
 
 
-    function multiTransferAndLock(address _lockedAddress, uint256[] memory _amountArr, uint256[] memory _releaseDaysArr) public onlyOwner onLockedRemain
+    function multiTransferAndLock(address _lockedAddress, uint256[] memory _amountArr, uint256[] memory _releaseDaysArr) public onlyOwner
     {
         require(_amountArr.length !=0);
         require(_releaseDaysArr.length !=0); 
@@ -43,11 +37,11 @@ contract Founder is Ownable {
         
     }
 
-    function transferAndLock(address _lockedAddress,uint256 _amount,uint _releaseDays) public onlyOwner onLockedRemain
+    function transferAndLock(address _lockedAddress,uint256 _amount,uint _releaseDays) public onlyOwner
     {
-        uint releasedDate = (_releaseDays.mul(1 days)).add(block.timestamp);
+        uint releasedDate = block.timestamp + _releaseDays * (1 days);
         LockItemByTime memory  lockItemByTime = LockItemByTime({amount:_amount, releaseDate:releasedDate,isRelease:0});
-        totalLockedAmount = totalLockedAmount.add(_amount);
+        totalLockedAmount = totalLockedAmount + _amount;
         lockListByTime[_lockedAddress].push(lockItemByTime);
 
     }
@@ -56,8 +50,7 @@ contract Founder is Ownable {
         if(getLockedTimeAt(msg.sender,_index)<=block.timestamp && getLockedIsReleaseAt(msg.sender,_index)==0)
         {
             lockListByTime[msg.sender][_index].isRelease=1;
-            // safeTransfer(contract IERC20 token, address to, uint256 value)
-           _rewardToken.safeTransfer(msg.sender, lockListByTime[msg.sender][_index].amount);
+            _rewardToken.safeTransfer(msg.sender, lockListByTime[msg.sender][_index].amount);
         }
 
     }

@@ -1,5 +1,5 @@
 //SPDX-License-Identifier: UNLICENSED
-pragma solidity >=0.7.5<=0.8.9;
+pragma solidity >=0.8.0<=0.8.9;
 
 import "openzeppelin-solidity/contracts/utils/Context.sol";
 import "openzeppelin-solidity/contracts/utils/Counters.sol";
@@ -64,14 +64,6 @@ contract Mercenary is ERC721Enumerable,Ownable
         eggs[msg.sender] -= 1;    
         return true;
     }
-
-    function openEggs(uint256 quantityEggs) public returns(bool)
-    {
-        require(eggs[msg.sender] >= quantityEggs, "The eggs is not enough to open.");
-        eggs[msg.sender] -= quantityEggs;
-        return true;
-    }
-
 
     function openEggAndAward() public returns (uint256 newItemId)  {
         require(openEgg());

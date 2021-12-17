@@ -1,16 +1,18 @@
 //SPDX-License-Identifier: UNLICENSED
-pragma solidity >=0.7.5<=0.8.9;
+pragma solidity >=0.8.0<=0.8.9;
 
 import "openzeppelin-solidity/contracts/token/ERC721/IERC721Receiver.sol";
 import "openzeppelin-solidity/contracts/token/ERC20/IERC20.sol";
+import "openzeppelin-solidity/contracts/token/ERC721/IERC721.sol";
+import "openzeppelin-solidity/contracts/access/Ownable.sol";
 
-import "./Mercenary.sol";
-import "./Belly.sol";
 
-contract Market is IERC721Receiver {
 
-    Mercenary public mercenary;
-    Belly public token;
+
+contract Market is IERC721Receiver,Ownable {
+
+    IERC721 public mercenary;
+    IERC20 public token;
 
     struct StakeDetail {
         address payable author;
@@ -22,13 +24,13 @@ contract Market is IERC721Receiver {
     event UnstakeNft(uint256 _tokenId);
     event BuyNft(uint256 _tokenId, uint256 _price);
 
-    uint256 public commissionRate = 7; // percentage
+    uint256 public tax = 7; // percentage
     uint256[] public stakedNft;
     mapping ( uint256 => StakeDetail ) stakeDetail;
 
-    constructor(address _mercenary, address _token) {
-        mercenary = Mercenary(_mercenary);
-        token = Belly(_token);
+    constructor(IERC721 _mercenary, IERC20 _token) {
+        mercenary = _mercenary;
+        token = _token;
     }
 
     function onERC721Received(
@@ -145,16 +147,25 @@ contract Market is IERC721Receiver {
         require(mercenary.ownerOf(_tokenId) == address(this), "This NFT doesn't exist on market");
         require(stakeDetail[_tokenId].price <= _price, "Minimum price has not been reached");
 
-        require(token.allowance(msg.sender, stakeDetail[_tokenId].author) >= _price * (100 - commissionRate) / 100, "Insufficient allowance for author");
-        require(token.allowance(msg.sender, address(this)) >= _price * commissionRate / 100, "Insufficient allowance for market owner");
+        require(token.allowance(msg.sender, stakeDetail[_tokenId].author) >= _price * (100 - tax) / 100, "Insufficient allowance for author");
+        require(token.allowance(msg.sender, address(this)) >= _price * tax / 100, "Insufficient allowance for market owner");
 
         pop(stakedNft, _tokenId);
         
-        token.transferFrom(msg.sender, stakeDetail[_tokenId].author, _price * (100 - commissionRate) / 100);
-        token.transferFrom(msg.sender, address(this), _price * commissionRate / 100);
+        token.transferFrom(msg.sender, stakeDetail[_tokenId].author, _price * (100 - tax) / 100);
+        token.transferFrom(msg.sender, address(this), _price * tax / 100);
         mercenary.safeTransferFrom(address(this), msg.sender, _tokenId);
 
         emit BuyNft(_tokenId, _price);
     }
+    function withdraw() public onlyOwner {
+        payable(msg.sender).transfer(address(this).balance);
+    }
+
+    function withdrawErc20(IERC20 _token) public onlyOwner {
+        token.transfer(msg.sender, _token.balanceOf(address(this)));
+    }
+   
+
 
 }
