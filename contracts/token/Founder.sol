@@ -28,11 +28,11 @@ contract Founder is Ownable {
 
     function multiTransferAndLock(address _lockedAddress, uint256[] memory _amountArr, uint256[] memory _releaseDaysArr) public onlyOwner
     {
-        require(_amountArr.length !=0);
-        require(_releaseDaysArr.length !=0); 
-        require(_amountArr.length == _releaseDaysArr.length); 
-        for(uint i=0; i<_amountArr.length; i++){
-                transferAndLock(_lockedAddress, _amountArr[i], _releaseDaysArr[i]);
+        require(_amountArr.length !=0, "amountArr is empty");
+        require(_releaseDaysArr.length !=0, "releaseDaysArr is empty");
+        require(_amountArr.length == _releaseDaysArr.length, "amountArr and releaseDaysArr length is not equal");
+        for(uint i=0; i<_amountArr.length; i++) {
+            transferAndLock(_lockedAddress, _amountArr[i], _releaseDaysArr[i]);
         }
         
     }
@@ -117,11 +117,10 @@ contract Founder is Ownable {
     function getLockedFullAmount(address _lockedAddress) public view returns(uint256 _amount)
     {
         uint256 lockedAmount =0;
-        for(uint256 j = 0;j<getLockedListSize(_lockedAddress);j++)
-        {
-            
-                uint256 temp = getLockedAmountAt(_lockedAddress,j);
-                lockedAmount += temp;
+        for(uint256 j = 0;j<getLockedListSize(_lockedAddress);j++) {
+                    
+            uint256 temp = getLockedAmountAt(_lockedAddress,j);
+            lockedAmount += temp;
             
         }
         return lockedAmount;

@@ -6,14 +6,11 @@ import "openzeppelin-solidity/contracts/utils/Counters.sol";
 import "openzeppelin-solidity/contracts/access/Ownable.sol";
 import "openzeppelin-solidity/contracts/token/ERC721/extensions/ERC721Enumerable.sol";
 import "openzeppelin-solidity/contracts/token/ERC20/ERC20.sol";
-import "openzeppelin-solidity/contracts/utils/math/SafeMath.sol";
-
-
 
 contract Mercenary is ERC721Enumerable,Ownable 
 {
     using Counters for Counters.Counter;
-    using SafeMath for uint256;
+ 
     IERC20 public _token;
     mapping (address => uint256) public eggs;
     uint256 public _eggPrice;
@@ -54,7 +51,7 @@ contract Mercenary is ERC721Enumerable,Ownable
     function buyEgg(uint256 quantityEggs) public returns (bool){
         
         require(quantityEggs == 1 || _flag == true, "You can not buy any Mercenary.");
-        require(_token.transferFrom(msg.sender, address(this), (_eggPrice.mul(quantityEggs))), "Unable to transfer token.");
+        _token.transferFrom(msg.sender, address(this), _eggPrice * quantityEggs);
         eggs[msg.sender] += quantityEggs;
         return true;
     }
@@ -72,7 +69,7 @@ contract Mercenary is ERC721Enumerable,Ownable
 
     function openEggsAndAwards(uint quantityEggs) public returns (uint[] memory _ids)  {
         
-        require(quantityEggs<=eggs[msg.sender]);
+        require(quantityEggs<=eggs[msg.sender], "The eggs is not enough to open.");
         uint[] memory ids = new uint[](quantityEggs);
         uint i = 0;
         while(i<quantityEggs)

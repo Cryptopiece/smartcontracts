@@ -5,12 +5,12 @@ import "openzeppelin-solidity/contracts/token/ERC721/IERC721Receiver.sol";
 import "openzeppelin-solidity/contracts/token/ERC20/IERC20.sol";
 import "openzeppelin-solidity/contracts/token/ERC721/IERC721.sol";
 import "openzeppelin-solidity/contracts/access/Ownable.sol";
-
+import "openzeppelin-solidity/contracts/token/ERC20/utils/SafeERC20.sol";
 
 
 
 contract Market is IERC721Receiver,Ownable {
-
+    using SafeERC20 for IERC20;
     IERC721 public mercenary;
     IERC20 public token;
 
@@ -146,12 +146,12 @@ contract Market is IERC721Receiver,Ownable {
         require(token.balanceOf(msg.sender) >= _price, "Insufficient account balance");
         require(mercenary.ownerOf(_tokenId) == address(this), "This NFT doesn't exist on market");
         require(stakeDetail[_tokenId].price < _price, "Minimum price has not been reached");
-        pop(stakedNft, _tokenId);     
+           
         token.transferFrom(msg.sender, address(this), _price );
         token.transfer(stakeDetail[_tokenId].author, _price * (100 - tax) / 100);
-        
+          
         mercenary.safeTransferFrom(address(this), msg.sender, _tokenId);
-
+        pop(stakedNft, _tokenId);
         emit BuyNft(_tokenId, _price);
     }
     function withdraw() public onlyOwner {
