@@ -18,6 +18,10 @@ contract Market is IERC721Receiver {
         uint256 tokenId;
     }
 
+    event StakeNft(uint256 _tokenId, uint256 _price);
+    event UnstakeNft(uint256 _tokenId);
+    event BuyNft(uint256 _tokenId, uint256 _price);
+
     uint256 public commissionRate = 7; // percentage
     uint256[] public stakedNft;
     mapping ( uint256 => StakeDetail ) stakeDetail;
@@ -121,6 +125,8 @@ contract Market is IERC721Receiver {
         stakeDetail[_tokenId] = StakeDetail(payable(msg.sender), _price, _tokenId);
 
         mercenary.safeTransferFrom(msg.sender, address(this), _tokenId);
+
+        emit StakeNft(_tokenId, _price);
     }
 
     function unstakeNft(uint256 _tokenId) public {
@@ -130,6 +136,8 @@ contract Market is IERC721Receiver {
         pop(stakedNft, _tokenId);
 
         mercenary.safeTransferFrom(address(this), msg.sender, _tokenId);
+
+        emit UnstakeNft(_tokenId);
     }
 
     function buyNft(uint256 _tokenId, uint256 _price) public {
@@ -145,6 +153,8 @@ contract Market is IERC721Receiver {
         token.transferFrom(msg.sender, stakeDetail[_tokenId].author, _price * (100 - commissionRate) / 100);
         token.transferFrom(msg.sender, address(this), _price * commissionRate / 100);
         mercenary.safeTransferFrom(address(this), msg.sender, _tokenId);
+
+        emit BuyNft(_tokenId, _price);
     }
 
 }

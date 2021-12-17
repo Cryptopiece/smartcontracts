@@ -67,7 +67,7 @@ contract Mercenary is ERC721Enumerable,Ownable
 
     function openEggs(uint256 quantityEggs) public returns(bool)
     {
-        require(eggs[msg.sender] > 0, "The eggs is not enough to open.");
+        require(eggs[msg.sender] >= quantityEggs, "The eggs is not enough to open.");
         eggs[msg.sender] -= quantityEggs;
         return true;
     }
