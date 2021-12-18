@@ -16,5 +16,8 @@ Edit ganache private key,MNEMONIC  and Bscscan API
 `yarn test`
 ## Deploy
 `yarn deploy dev`
-
+## Verify 
+```
+yarn hardhat verify --network bsctest 0xCONTRACTADDRESS
+```
 
