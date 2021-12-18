@@ -14,6 +14,10 @@ contract Founder is Ownable {
     uint256 totalLockedAmount;
     
 
+    event ReleaseMyToken(uint256 _index);
+    event TransferAndLock(address _lockedAddress,uint256 _amount,uint _releaseDays);
+    event SetRewardToken(IERC20 rewardToken);
+
     
     struct LockItemByTime
     {
@@ -44,6 +48,7 @@ contract Founder is Ownable {
         totalLockedAmount = totalLockedAmount + _amount;
         lockListByTime[_lockedAddress].push(lockItemByTime);
 
+        emit TransferAndLock(_lockedAddress, _amount, _releaseDays);
     }
     function releaseMyToken(uint256 _index) public
     {
@@ -52,6 +57,7 @@ contract Founder is Ownable {
             lockListByTime[msg.sender][_index].isRelease=1;
             _rewardToken.safeTransfer(msg.sender, lockListByTime[msg.sender][_index].amount);
         }
+        emit ReleaseMyToken(_index);
 
     }
     function releaseAllMyToken() public
@@ -134,6 +140,7 @@ contract Founder is Ownable {
 
     function setRewardToken(IERC20 rewardToken) public onlyOwner{
         _rewardToken = rewardToken;
+        emit SetRewardToken(_rewardToken);
     }
 
     
