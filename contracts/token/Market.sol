@@ -147,7 +147,7 @@ contract Market is IERC721Receiver,Ownable {
         require(mercenary.ownerOf(_tokenId) == address(this), "This NFT doesn't exist on market");
         require(stakeDetail[_tokenId].price < _price, "Minimum price has not been reached");
            
-        token.transferFrom(msg.sender, address(this), _price );
+        SafeERC20.safeTransferFrom(token, msg.sender, address(this), _price);
         token.transfer(stakeDetail[_tokenId].author, _price * (100 - tax) / 100);
           
         mercenary.safeTransferFrom(address(this), msg.sender, _tokenId);
