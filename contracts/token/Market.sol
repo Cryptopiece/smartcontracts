@@ -145,7 +145,7 @@ contract Market is IERC721Receiver,Ownable {
     function buyNft(uint256 _tokenId, uint256 _price) public {
         require(token.balanceOf(msg.sender) >= _price, "Insufficient account balance");
         require(mercenary.ownerOf(_tokenId) == address(this), "This NFT doesn't exist on market");
-        require(stakeDetail[_tokenId].price < _price, "Minimum price has not been reached");
+        require(stakeDetail[_tokenId].price <= _price, "Minimum price has not been reached");
            
         SafeERC20.safeTransferFrom(token, msg.sender, address(this), _price);
         token.transfer(stakeDetail[_tokenId].author, _price * (100 - tax) / 100);
